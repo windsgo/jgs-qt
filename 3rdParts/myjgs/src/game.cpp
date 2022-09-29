@@ -1,10 +1,11 @@
 #include "game.h"
 
-#ifdef __QT
+// linux does not need to resolve ifstream with chinese names
+#if defined (__WIN32__) && defined(__QT)
 #include <QDataStream>
 #include <QFile>
 #include <QString>
-#endif
+#endif // defined (__WIN32__) && defined(__QT)
 
 namespace myjgs {
 
@@ -16,7 +17,7 @@ Game::Game(const ::std::string &jgs_file_name)
 
 void Game::_init()
 {
-#ifdef __QT
+#if defined (__WIN32__) && defined(__QT)
     QFile q_file(_jgs_file_name.c_str());
     if (!q_file.open(QIODevice::ReadOnly)) {
         throw GameException("[q]open file error");
@@ -34,7 +35,7 @@ void Game::_init()
     // read header
     JGSTotalInfoBlock total_info;
 
-#ifdef __QT
+#if defined (__WIN32__) && defined(__QT)
     QDataStream q_datastream(&q_file);
     q_datastream.readRawData(reinterpret_cast<char *>(&total_info), sizeof(total_info));
     if (q_datastream.status() != QDataStream::Status::Ok) {
@@ -68,7 +69,7 @@ void Game::_init()
     for (int i = 0; i < _total_steps; ++i)
     {
         JGSEventBlock ev;
-#ifdef __QT
+#if defined (__WIN32__) && defined(__QT)
         q_datastream.readRawData(reinterpret_cast<char *>(&ev), sizeof(ev));
         if (q_datastream.status() != QDataStream::Status::Ok) {
             throw GameException("read file error 1");
@@ -83,7 +84,7 @@ void Game::_init()
 
         _event_list.push_back(ev); // ev has no move constructor, copy and pushback here
     }
-#ifdef __QT
+#if defined (__WIN32__) && defined(__QT)
     q_datastream.setDevice(nullptr);
     q_file.close();
 #else

@@ -2,48 +2,23 @@
 #include "ui_draggerwidget.h"
 
 DraggerWidget::DraggerWidget(QWidget *parent)
-    : QWidget(parent)
-    , ui(new Ui::DraggerWidget)
+    : QMainWindow(parent)
 {
-    ui->setupUi(this);
     _initWidget();
 }
 
 DraggerWidget::~DraggerWidget()
 {
-    delete ui;
 }
 
 void DraggerWidget::_initWidget()
 {
     this->setAcceptDrops(true); // 允许拖入
-    this->setWindowFlags(Qt::FramelessWindowHint); // 取消标题栏
-    _ui_normal();
-}
-
-void DraggerWidget::_ui_success() {
-    _green();
-    ui->label->setText("拖入识别成功");
-}
-
-void DraggerWidget::_ui_fail() {
-    _red();
-    ui->label->setText("文件识别失败");
-}
-
-void DraggerWidget::_ui_dragging() {
-    _orange();
-    ui->label->setText("请松开鼠标");
-}
-
-void DraggerWidget::_ui_normal() {
-    _yellow();
-    ui->label->setText("请拖入");
+//    this->setWindowFlags(Qt::FramelessWindowHint); // 取消标题栏
 }
 
 void DraggerWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-    _ui_dragging();
     auto mime_data = event->mimeData();
     if (mime_data->hasUrls()) {
         // 拖入的对象有路径
@@ -62,7 +37,6 @@ void DraggerWidget::dragEnterEvent(QDragEnterEvent *event)
 void DraggerWidget::dragLeaveEvent(QDragLeaveEvent *event)
 {
     Q_UNUSED(event);
-    _ui_normal();
 }
 
 void DraggerWidget::dropEvent(QDropEvent *event)
@@ -72,7 +46,6 @@ void DraggerWidget::dropEvent(QDropEvent *event)
         // 拖入的对象有路径
         if (mime_data->urls().size() <= 0) {
             event->ignore();
-            _ui_fail();
             return;
         }
 
@@ -93,12 +66,10 @@ void DraggerWidget::dropEvent(QDropEvent *event)
             }
         }
         if (!_last_d.isEmpty()) {
-            _ui_success();
             emit sthDragged(_last_d);
         }
     } else {
         event->ignore();
-        _ui_fail();
     }
 }
 

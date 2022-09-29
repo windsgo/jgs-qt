@@ -2,6 +2,7 @@
 #define DRAGGERWIDGET_H
 
 #include <QWidget>
+#include <QMainWindow>
 #include <QDragEnterEvent>
 #include <QDragLeaveEvent>
 #include <QDropEvent>
@@ -12,11 +13,11 @@
 #include <QFileInfo>
 #include <ostream>
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class DraggerWidget; }
-QT_END_NAMESPACE
+//QT_BEGIN_NAMESPACE
+//namespace Ui { class DraggerWidget; }
+//QT_END_NAMESPACE
 
-class DraggerWidget : public QWidget
+class DraggerWidget : public QMainWindow
 {
     Q_OBJECT
 public:
@@ -39,13 +40,7 @@ public:
         friend DraggerWidget;
         friend QDebug operator<<(QDebug os, const DraggerWidget::DragObjects_t& d);
         inline void clear() {file_list.clear(); folder_list.clear(); type = TYPE_NOTHING;}
-//        inline QDebug str(QDebug os) const {
-//            os << "TYPE:        " << (type & TYPE_FILE ? "File " : "") << (type & TYPE_FOLDER ? "Folder" : "") << '\n';
-//            os << "TOTAL_SIZE:  " << QString::number(size()) << '\n';
-//            os << "FILE_LIST:   " << file_list.join(";") << '\n';
-//            os << "FOLDER_LIST: " << folder_list.join(";") << '\n';
-//            return os;
-//        }
+
         inline const char* str() const {
             QStringList list;
             list << "TYPE:        " + (type & TYPE_FILE ? QString("File ") : QString("")) + (type & TYPE_FOLDER ? QString("Folder") : QString(""));
@@ -63,16 +58,10 @@ signals:
 public:
     DraggerWidget(QWidget *parent = nullptr);
 
-    /**
-     * @brief resetWindowColor 重置ui颜色，在获取完毕处理完毕后可以调用
-     */
-    inline void resetWindowColor() {_ui_normal();}
-
     ~DraggerWidget();
     /*****************************接口*****************************/
 
 private:
-    Ui::DraggerWidget *ui;
     DragObjects_t _last_d;
 
 private:
@@ -80,25 +69,8 @@ private:
      * @brief _initWidget 初始化窗口
      */
     void _initWidget();
-    struct _Color {
-        int r; int g; int b;
-    };
-    inline void _setBackground(int r, int g, int b) {this->setStyleSheet(QString("QWidget{background-color:rgb(%0,%1,%2)}").arg(r).arg(g).arg(b));}
-    inline void _setBackground(const _Color& c) {_setBackground(c.r, c.g, c.b);}
-    inline void _yellow()   {this->setStyleSheet(QString("QWidget{background-color:yellow}"));}
-    inline void _green()    {this->setStyleSheet(QString("QWidget{background-color:green}"));}
-    inline void _red()      {this->setStyleSheet(QString("QWidget{background-color:red}"));}
-    inline void _orange()   {this->setStyleSheet(QString("QWidget{background-color:orange}"));}
 
-    /**
-     * @brief _ui_success 可以在这里自定义一些ui的行为
-     */
-    void _ui_success();
-    void _ui_fail();
-    void _ui_dragging();
-    void _ui_normal();
-
-private:
+protected:
     /**
      * @brief dragEnterEvent 重写拖拽进入事件处理
      * @param event

@@ -24,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent)
 
         QString default_save_path;
 
+        qDebug() << d;
+
         switch (d.type) {
         case TYPE_NOTHING:{
             return;
@@ -37,12 +39,9 @@ MainWindow::MainWindow(QWidget *parent)
         }
         case TYPE_FOLDER:{
             default_save_path = QDir::cleanPath(d.folder_list.at(0));
-            qDebug() << "default_save_path" << default_save_path;
             for (auto& folder : d.folder_list) {
-                qDebug() << "folder" << folder;
                 auto files = find_file(folder, QStringList({"*.jgs"}));
                 for (auto& file : files) {
-                    qDebug() << "files" << file;
                     _check_jgs_and_insert(file);
                 }
             }
@@ -64,12 +63,13 @@ MainWindow::MainWindow(QWidget *parent)
         auto ui_path = ui->le_savePath->text();
         QFileInfo ui_path_info(ui_path);
         if (!ui_path_info.isDir()) {
+            qDebug() << "!ui_path_info.isDir()";
             ui->le_savePath->setText(QFileInfo(default_save_path).path());
         }
 
-        QString save_file_name = QFileInfo(default_save_path).path() + QDir::separator()
+        QString save_file_name = ui->le_savePath->text() + QDir::separator()
                 + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss") + ".txt";
-//        qDebug() << save_file_name;
+        qDebug() << save_file_name;
         QFile file(save_file_name);
         if (!file.open(QIODevice::OpenModeFlag::ReadWrite)) {
             ui->textBrowser->setText("save file failed");
@@ -79,11 +79,12 @@ MainWindow::MainWindow(QWidget *parent)
         ts.setDevice(&file);
 
         for (auto& jgs_file : _jgs_file_list) {
-            qDebug() << jgs_file;
+//            qDebug() << jgs_file;
             _handle_one_file(jgs_file);
         }
 
         ui->textBrowser->append(QString("successful handle %0 files").arg(_jgs_file_list.size()));
+        ui->textBrowser->append(QString("saved to %0").arg(save_file_name));
 
         ts.flush();
         ts.reset();
@@ -154,20 +155,15 @@ static QStringList find_file(const QString &start_dir, const QStringList &filter
 {
     QStringList names;
 
-    qDebug() << "start_dir" << start_dir << "filter" << filters;
     if (!QFileInfo(start_dir).isDir()) return names;
 
     QDir dir(start_dir);
 
-//    qDebug() << dir.entryList(filters, QDir::Files);
-
     for(auto& file : dir.entryList(filters, QDir::Files)) {
-        qDebug() << "file" << file;
         names.append(start_dir + QDir::separator() + file);
     }
 
     for(auto& subdir : dir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot)) {
-        qDebug() << "subdir:" << subdir;
         names.append(find_file(start_dir + QDir::separator() + subdir, filters));
     }
 

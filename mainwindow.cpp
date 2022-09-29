@@ -9,6 +9,7 @@
 #include <QDateTime>
 #include <QElapsedTimer>
 #include <QFileDialog>
+#include <locale>
 
 static QStringList find_file(const QString& start_dir, const QStringList& filters);
 
@@ -69,6 +70,7 @@ MainWindow::MainWindow(QWidget *parent)
 
         QString save_file_name = ui->le_savePath->text() + QDir::separator()
                 + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss") + ".txt";
+        save_file_name = QDir::toNativeSeparators(save_file_name);
         qDebug() << save_file_name;
         QFile file(save_file_name);
         if (!file.open(QIODevice::OpenModeFlag::ReadWrite)) {
@@ -76,14 +78,22 @@ MainWindow::MainWindow(QWidget *parent)
             return;
         }
 
+        if (_jgs_file_list.empty()) {
+            ts.reset();
+            file.close();
+            return;
+        }
+
         ts.setDevice(&file);
+
+        int successful_process_num = 0; // 记录成功处理的文件数目
 
         for (auto& jgs_file : _jgs_file_list) {
 //            qDebug() << jgs_file;
-            _handle_one_file(jgs_file);
+            if (_handle_one_file(QDir::toNativeSeparators(jgs_file))) ++successful_process_num;
         }
 
-        ui->textBrowser->append(QString("successful handle %0 files").arg(_jgs_file_list.size()));
+        ui->textBrowser->append(QString("successful handle %0 files").arg(successful_process_num));
         ui->textBrowser->append(QString("saved to %0").arg(save_file_name));
 
         ts.flush();
@@ -106,7 +116,7 @@ void MainWindow::_check_jgs_and_insert(const QString &filename)
     }
 }
 
-void MainWindow::_handle_one_file(const QString &filename)
+bool MainWindow::_handle_one_file(const QString &filename)
 {
     QTextCodec *utf8 = QTextCodec::codecForName("UTF-8");
     QTextCodec *gbk = QTextCodec::codecForName("gb2312");
@@ -114,6 +124,9 @@ void MainWindow::_handle_one_file(const QString &filename)
 
     ts << "-----------START------------\n";
     ts << "Processing:" + filename + "\n\n";
+    ui->textBrowser->append("processing:" + QFileInfo(filename).fileName());
+
+    bool ret = false;
 
     try {
 
@@ -132,23 +145,23 @@ void MainWindow::_handle_one_file(const QString &filename)
 
         }
 
+        ret = true;
+
     } catch (const myjgs::GameException& ge) {
-        ui->textBrowser->clear();
-        QString tmp{"GameException"};
+        QString tmp{"GameException: "};
         tmp.append(ge.what());
         ui->textBrowser->append(tmp);
     } catch (const std::exception& stde) {
-        ui->textBrowser->clear();
-        QString tmp{"std::exception"};
+        QString tmp{"std::exception: "};
         tmp.append(stde.what());
         ui->textBrowser->append(tmp);
     } catch (...) {
-        ui->textBrowser->clear();
         ui->textBrowser->append("unknown error");
     }
 
     ui->textBrowser->append("process over:" + QFileInfo(filename).fileName());
     ts << "-----------END------------\n";
+    return ret;
 }
 
 static QStringList find_file(const QString &start_dir, const QStringList &filters)

@@ -20,7 +20,7 @@ private slots:
 
 private:
     void _check_jgs_and_insert(const QString& filename);
-    void _handle_one_file(const QString& filename);
+    bool _handle_one_file(const QString& filename);
 
 
 private:

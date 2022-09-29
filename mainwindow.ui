@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>432</width>
-    <height>214</height>
+    <height>221</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>MyJGS</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -57,7 +57,7 @@
      <x>0</x>
      <y>0</y>
      <width>432</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

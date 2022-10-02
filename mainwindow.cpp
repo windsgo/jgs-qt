@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
         QFileInfo ui_path_info(ui_path);
         if (!ui_path_info.isDir()) {
             qDebug() << "!ui_path_info.isDir()";
-            ui->le_savePath->setText(QFileInfo(default_save_path).path());
+            ui->le_savePath->setText(QDir::toNativeSeparators(QFileInfo(default_save_path).path()));
         }
 
         QString save_file_name = ui->le_savePath->text() + QDir::separator()

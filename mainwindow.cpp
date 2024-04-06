@@ -128,21 +128,34 @@ bool MainWindow::_handle_one_file(const QString &filename)
 
     bool ret = false;
 
+    static auto color_sequence = std::array<myjgs::PlayerColor, 4> {
+        myjgs::PlayerColor::YELLOW,
+        myjgs::PlayerColor::PURPLE,
+        myjgs::PlayerColor::GREEN,
+        myjgs::PlayerColor::BLUE,
+    };
+
     try {
 
         myjgs::Game::ptr game = std::make_shared<myjgs::Game>(filename.toStdString());
         game->process_all_events();
 
         for (uint8_t i = 0; i < 4; ++i) {
-            myjgs::PlayerColor color = (myjgs::PlayerColor)i;
+            // myjgs::PlayerColor color = (myjgs::PlayerColor)i;
+            auto color = color_sequence[i];
 
             ts << ("color:" + QString(myjgs::itemcolor_type2string(color).c_str()) + "\n");
             ts << ("qq:" + QString::number(game->get_player(color).qq()) + "\n");
             QString name_unicode = gbk->toUnicode(game->get_player(color).name());
             QByteArray name_utf8 = utf8->fromUnicode(name_unicode);
             ts << ("name:" + name_utf8 + "\n");
-            ts << ("remain socre:" + QString::number(game->get_player(color).get_current_score()) + "\n\n");
+            ts << ("remain socre:" + QString::number(game->get_player(color).get_current_score()) + "\n");
 
+            auto player_stat = game->get_player(color).get_stat();
+            ts << QString{"神兵天降: 工兵击杀值: %0"}.arg(player_stat[0]) << '\n';
+            ts << QString{"拆弹专家: 击杀炸弹数: %0"}.arg(player_stat[1]) << '\n';
+            ts << QString{"运筹帷幄: 司令击杀值: %0"}.arg(player_stat[2]) << '\n';
+            ts << QString{"七、八大天王: 403938击杀数: %0"}.arg(player_stat[3]) << "\n\n";
         }
 
         ret = true;

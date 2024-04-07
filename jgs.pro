@@ -25,13 +25,11 @@ SOURCES += \
     3rdParts/myjgs/src/item.cpp \
     3rdParts/myjgs/src/player.cpp \
     3rdParts/myjgs/src/type.cpp \
-    3rdParts/myjgs/utils/config.cpp \
     Src/main.cpp \
     Src/mainwindow.cpp
 
 HEADERS += \
     3rdParts/dragger/draggerwidget.h \
-    3rdParts/myjgs/3rdParts/meojson/include/json.hpp \
     3rdParts/myjgs/src/block.h \
     3rdParts/myjgs/src/event.h \
     3rdParts/myjgs/src/game.h \
@@ -39,7 +37,6 @@ HEADERS += \
     3rdParts/myjgs/src/myjgs.h \
     3rdParts/myjgs/src/player.h \
     3rdParts/myjgs/src/type.h \
-    3rdParts/myjgs/utils/config.h \
     Src/mainwindow.h
 
 FORMS += \

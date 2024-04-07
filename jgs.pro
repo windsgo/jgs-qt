@@ -26,8 +26,8 @@ SOURCES += \
     3rdParts/myjgs/src/player.cpp \
     3rdParts/myjgs/src/type.cpp \
     3rdParts/myjgs/utils/config.cpp \
-    main.cpp \
-    mainwindow.cpp
+    Src/main.cpp \
+    Src/mainwindow.cpp
 
 HEADERS += \
     3rdParts/dragger/draggerwidget.h \
@@ -40,11 +40,11 @@ HEADERS += \
     3rdParts/myjgs/src/player.h \
     3rdParts/myjgs/src/type.h \
     3rdParts/myjgs/utils/config.h \
-    mainwindow.h
+    Src/mainwindow.h
 
 FORMS += \
     3rdParts/dragger/draggerwidget.ui \
-    mainwindow.ui
+    Src/mainwindow.ui
 
 INCLUDEPATH += \
     3rdParts/dragger/ \
@@ -57,4 +57,4 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-RC_ICONS = hello.ico
+RC_ICONS = Src/hello.ico
